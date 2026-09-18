@@ -6,11 +6,19 @@ import { EventSheet } from "@/components/event-sheet";
 import { SheetProvider } from "@/components/sheet-context";
 import { FocusProvider } from "@/components/pomodoro";
 
+function msUntilHour(hour: number, now = new Date()) {
+  const next = new Date(now);
+  next.setHours(hour, 0, 0, 0);
+  if (next.getTime() <= now.getTime()) next.setDate(next.getDate() + 1);
+  return next.getTime() - now.getTime();
+}
+
 export function TicklyRoot({ children }: { children: ReactNode }) {
   const settings = useTickly((s) => s.settings);
   const events = useTickly((s) => s.events);
   const notified = useTickly((s) => s.notified);
   const markNotified = useTickly((s) => s.markNotified);
+  const sweepTickedChecks = useTickly((s) => s.sweepTickedChecks);
 
   useEffect(() => {
     const apply = () => {
@@ -39,6 +47,25 @@ export function TicklyRoot({ children }: { children: ReactNode }) {
     const id = window.setInterval(tick, 20000);
     return () => window.clearInterval(id);
   }, [events, settings, notified, markNotified]);
+
+  useEffect(() => {
+    const hour = settings.cleanupHour ?? 20;
+    const run = () => {
+      if (sweepTickedChecks()) {
+        showReminder("Tickly", "Đã dọn việc con đã tick lúc 20:00.");
+      }
+    };
+    run();
+    let timeout = window.setTimeout(function arm() {
+      run();
+      timeout = window.setTimeout(arm, msUntilHour(hour));
+    }, msUntilHour(hour));
+    const backup = window.setInterval(run, 60000);
+    return () => {
+      window.clearTimeout(timeout);
+      window.clearInterval(backup);
+    };
+  }, [settings.cleanupHour, sweepTickedChecks]);
 
   return (
     <SheetProvider>
