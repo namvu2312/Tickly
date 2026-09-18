@@ -22,6 +22,8 @@ type State = {
   importAll: (events: CalEvent[]) => void;
   mergeEvents: (events: CalEvent[]) => void;
   bumpPomo: (id: string) => void;
+  lastSweep: string;
+  sweepTickedChecks: (now?: Date) => boolean;
   resetDemo: () => void;
 };
 
@@ -35,6 +37,7 @@ const defaultSettings: TicklySettings = {
   weekGoalHours: 6,
   pomoWork: 25,
   pomoBreak: 5,
+  cleanupHour: 20,
 };
 
 function at(d: Date, h: number, m: number) {
@@ -85,7 +88,6 @@ function demoEvents(): CalEvent[] {
   const weekly: CalEvent[] = [];
   for (let w = 0; w < 4; w += 1) {
     const day = addDays(today, w * 7);
-    // keep weekday of "today" for the sample series
     weekly.push(
       mk("An toàn mạng", at(day, 10, 30), 90, "study", {
         seriesId: series,
@@ -122,6 +124,7 @@ export const useTickly = create<State>()(
       events: demoEvents(),
       settings: defaultSettings,
       notified: [],
+      lastSweep: "",
       setHydrated: () => set({ hydrated: true }),
       upsert: (e) =>
         set({
@@ -176,6 +179,24 @@ export const useTickly = create<State>()(
             e.id === id ? { ...e, pomoDone: (e.pomoDone ?? 0) + 1 } : e,
           ),
         }),
+      sweepTickedChecks: (now = new Date()) => {
+        const hour = get().settings.cleanupHour ?? 20;
+        if (now.getHours() < hour) return false;
+        const key = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+        if (get().lastSweep === key) return false;
+        let removed = 0;
+        const events = get().events.map((e) => {
+          const keep = e.checklist.filter((c) => !c.done);
+          removed += e.checklist.length - keep.length;
+          return keep.length === e.checklist.length ? e : { ...e, checklist: keep };
+        });
+        if (removed === 0) {
+          set({ lastSweep: key });
+          return false;
+        }
+        set({ events, lastSweep: key });
+        return true;
+      },
       resetDemo: () => set({ events: demoEvents(), notified: [] }),
     }),
     {
@@ -184,6 +205,7 @@ export const useTickly = create<State>()(
         events: s.events,
         settings: s.settings,
         notified: s.notified,
+        lastSweep: s.lastSweep,
       }),
       merge: (persisted, current) => {
         const p = (persisted ?? {}) as Partial<State>;
@@ -196,6 +218,7 @@ export const useTickly = create<State>()(
           events,
           settings: { ...current.settings, ...(p.settings ?? {}) },
           notified: p.notified ?? [],
+          lastSweep: p.lastSweep ?? "",
           hydrated: true,
         };
       },
