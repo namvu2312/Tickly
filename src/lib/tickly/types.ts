@@ -42,6 +42,7 @@ export type TicklySettings = {
   weekGoalHours: number;
   pomoWork: number;
   pomoBreak: number;
+  cleanupHour: number;
 };
 
 export const CATEGORIES: {
