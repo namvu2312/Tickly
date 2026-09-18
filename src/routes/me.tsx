@@ -91,6 +91,13 @@ function MePage() {
         </p>
       </section>
       <section className="rounded-3xl bg-canvas-2 p-4 shadow-soft">
+        <h2 className="mb-2 text-sm font-semibold">Dọn checklist</h2>
+        <p className="text-sm text-muted">
+          Mỗi ngày lúc 20:00, việc con đã tick bị xoá. Việc chưa tick giữ nguyên.
+          Tickly cần đang mở (hoặc mở lại sau 20:00) để chạy.
+        </p>
+      </section>
+      <section className="rounded-3xl bg-canvas-2 p-4 shadow-soft">
         <h2 className="mb-3 text-sm font-semibold">Nhắc mặc định</h2>
         <div className="flex flex-wrap gap-2">
           {REMIND_CHIPS.map((m) => (
