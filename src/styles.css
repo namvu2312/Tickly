@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --color-canvas: #fff8f3;
+  --color-canvas-2: #fff1e8;
+  --color-ink: #1c1917;
+  --color-muted: #57534e;
+  --color-line: #e7e5e4;
+  --color-accent: #e25a1a;
+  --color-accent-soft: #fff1e6;
+  --color-done: #0f766e;
+  --color-done-soft: #ccfbf1;
+  --color-cat-study: #fed7aa;
+  --color-cat-study-ink: #9a3412;
+  --color-cat-deadline: #fecaca;
+  --color-cat-deadline-ink: #9f1239;
+  --color-cat-focus: #99f6e4;
+  --color-cat-focus-ink: #115e59;
+  --color-cat-social: #e9d5ff;
+  --color-cat-social-ink: #6b21a8;
+  --color-cat-health: #bbf7d0;
+  --color-cat-health-ink: #166534;
+  --color-cat-personal: #e7e5e4;
+  --color-cat-personal-ink: #44403c;
+  --radius-event: 16px;
+  --radius-sheet: 24px;
+  --shadow-soft: 0 8px 24px rgb(28 25 23 / 0.07);
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  html.dark {
+    --color-canvas: #1c1917;
+    --color-canvas-2: #292524;
+    --color-ink: #f5f5f4;
+    --color-muted: #a8a29e;
+    --color-line: #44403c;
+    --color-accent: #fb923c;
+    --color-accent-soft: #431407;
+    --color-done: #2dd4bf;
+    --color-done-soft: #134e4a;
+    --color-cat-study: #7c2d12;
+    --color-cat-study-ink: #fed7aa;
+    --color-cat-deadline: #881337;
+    --color-cat-deadline-ink: #fecaca;
+    --color-cat-focus: #115e59;
+    --color-cat-focus-ink: #99f6e4;
+    --color-cat-social: #581c87;
+    --color-cat-social-ink: #e9d5ff;
+    --color-cat-health: #14532d;
+    --color-cat-health-ink: #bbf7d0;
+    --color-cat-personal: #44403c;
+    --color-cat-personal-ink: #e7e5e4;
+  }
+  body {
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+  }
+  .tickly-sheet-scroll {
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-line) transparent;
+  }
+  .tickly-sheet-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+  .tickly-sheet-scroll::-webkit-scrollbar-thumb {
+    background: var(--color-line);
+    border-radius: 999px;
+  }
+  [vaul-drawer][vaul-drawer-visible="true"] {
+    overflow: hidden;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
